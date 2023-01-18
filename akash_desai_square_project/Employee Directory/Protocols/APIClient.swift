@@ -10,10 +10,10 @@ import Foundation
 protocol APIClient {
     var session: URLSession { get }
         
-    func fetch<T: Decodable>(
+    func fetch<T: Codable>(
         with: URLRequest,
         jsonDecoder: JSONDecoder,
-        decode: @escaping (Decodable) -> T?,
+        decode: @escaping (Codable) -> T?,
         completion: @escaping (Result<T, APIError>) -> Void
     )
 }

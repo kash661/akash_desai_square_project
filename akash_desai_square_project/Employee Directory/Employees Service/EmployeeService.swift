@@ -15,18 +15,33 @@ class EmployeeService: APIClient {
     
     static let shared: EmployeeService = EmployeeService()
     
-    typealias JSONTaskCompletionHandler<T: Decodable> = (Result<T, APIError>) -> Void
+    typealias JSONTaskCompletionHandler<T: Codable> = (Result<T, APIError>) -> Void
     
-    func getEmployees<T: Decodable>(url: URL?, decoding: T.Type, completion: @escaping JSONTaskCompletionHandler<T>) {
+    func getEmployees<T: Codable>(url: URL?, decoding: T.Type, completion: @escaping JSONTaskCompletionHandler<T>) {
         guard let url = url else { return }
         let request = URLRequest(url: url)
         
         let jsonDecoder = JSONDecoder()
         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
         
+        let jsonEncoder = JSONEncoder()
+        
         fetch(with: request, jsonDecoder: jsonDecoder, decode: { json -> T? in
-            guard let employees = json as? T else { return nil }
-            return employees
+            guard let employeeDirectory = json as? T else { return nil }
+            do {
+                let data = try jsonEncoder.encode(employeeDirectory)
+                if let documentDirectory = FileManager.default.urls(for: .documentDirectory,
+                                                                    in: .userDomainMask).first {
+                    let filePath = documentDirectory.appendingPathComponent("EmployeeDirectory.json")
+                    do {
+                        try data.write(to: filePath)
+                    } catch {
+                    }
+                }
+            } catch {
+                
+            }
+            return employeeDirectory
         }, completion: completion)
     }
 }
