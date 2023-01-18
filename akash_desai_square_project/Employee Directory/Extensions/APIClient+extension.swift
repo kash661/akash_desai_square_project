@@ -9,9 +9,9 @@ import Foundation
 
 extension APIClient {
     
-    typealias JSONTaskCompletionHandler = (Decodable?, APIError?) -> Void
+    typealias JSONTaskCompletionHandler = (Codable?, APIError?) -> Void
     
-    func decodingTask<T: Decodable>(with request: URLRequest, decodingType: T.Type, jsonDecoder: JSONDecoder, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTask {
+    func decodingTask<T: Codable>(with request: URLRequest, decodingType: T.Type, jsonDecoder: JSONDecoder, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTask {
         
         let task = session.dataTask(with: request) { data, response, error in
             
@@ -40,7 +40,7 @@ extension APIClient {
         return task
     }
     
-    func fetch<T: Decodable>(with: URLRequest, jsonDecoder: JSONDecoder, decode: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void) {
+    func fetch<T: Codable>(with: URLRequest, jsonDecoder: JSONDecoder, decode: @escaping (Codable) -> T?, completion: @escaping (Result<T, APIError>) -> Void) {
         
         let task = decodingTask(with: with, decodingType: T.self, jsonDecoder: jsonDecoder) { data, error in
             
